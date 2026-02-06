@@ -28,13 +28,13 @@ class CrisisSupport {
   createCrisisModal() {
     const modal = document.createElement('div');
     modal.id = 'crisis-modal';
-    modal.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4';
+    modal.className = 'hidden';
     modal.setAttribute('role', 'dialog');
     modal.setAttribute('aria-modal', 'true');
     modal.setAttribute('aria-labelledby', 'crisis-modal-title');
     
     modal.innerHTML = `
-      <div class="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div class="crisis-modal-content">
         <div class="p-6">
           <div class="flex items-center justify-between mb-6">
             <h2 id="crisis-modal-title" class="text-3xl font-bold text-red-600">🆘 Crisis Support</h2>
@@ -149,7 +149,13 @@ class CrisisSupport {
     const modal = document.getElementById('crisis-modal');
     if (modal) {
       modal.classList.remove('hidden');
+      // Prevent body scroll when modal is open
       document.body.style.overflow = 'hidden';
+      // Focus on modal for accessibility
+      const closeBtn = modal.querySelector('.close-crisis-modal');
+      if (closeBtn) {
+        setTimeout(() => closeBtn.focus(), 100);
+      }
     }
   }
 

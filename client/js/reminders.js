@@ -17,40 +17,39 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (isAuthenticated) {
     initSocket();
     
-    // Listen for reminder notifications and updates
-    const socket = getSocket();
-    if (socket) {
-      socket.on('reminder:triggered', (data) => {
-        showToast(`Reminder: ${data.title}`, 'info');
-        
-        // Show browser notification if permission granted
-        if ('Notification' in window && Notification.permission === 'granted') {
-          new Notification(data.title, {
-            body: data.description || `Time for your ${data.type}`,
-            icon: '/favicon.ico',
-            tag: `reminder-${data.id}`
-          });
-        }
-        
-        // Reload reminders list
-        loadReminders();
-      });
+    // Listen for reminder notifications and updates using window events
+    // (Socket.IO events are already handled in socket-client.js and dispatched as window events)
+    window.addEventListener('reminder:triggered', (e) => {
+      const data = e.detail;
+      showToast(`Reminder: ${data.title}`, 'info');
       
-      socket.on('reminder:created', (data) => {
-        showToast('Reminder created!', 'success');
-        loadReminders();
-      });
+      // Show browser notification if permission granted
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification(data.title, {
+          body: data.description || `Time for your ${data.type}`,
+          icon: '/favicon.ico',
+          tag: `reminder-${data.id}`
+        });
+      }
       
-      socket.on('reminder:updated', (data) => {
-        showToast('Reminder updated!', 'success');
-        loadReminders();
-      });
-      
-      socket.on('reminder:deleted', (data) => {
-        showToast('Reminder deleted!', 'success');
-        loadReminders();
-      });
-    }
+      // Reload reminders list
+      loadReminders();
+    });
+    
+    window.addEventListener('reminder:created', (e) => {
+      showToast('Reminder created!', 'success');
+      loadReminders();
+    });
+    
+    window.addEventListener('reminder:updated', (e) => {
+      showToast('Reminder updated!', 'success');
+      loadReminders();
+    });
+    
+    window.addEventListener('reminder:deleted', (e) => {
+      showToast('Reminder deleted!', 'success');
+      loadReminders();
+    });
   }
   // Form submission
   const reminderForm = document.getElementById('reminder-form');

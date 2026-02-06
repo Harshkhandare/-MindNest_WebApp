@@ -278,7 +278,12 @@ export const initSocket = () => {
   return socketInstance;
 };
 
-export const getSocket = () => socketInstance;
+export const getSocket = () => {
+  if (socketInstance && socketInstance.socket) {
+    return socketInstance.socket;
+  }
+  return null;
+};
 
 // Auto-initialize on page load if authenticated
 if (document.readyState === 'loading') {

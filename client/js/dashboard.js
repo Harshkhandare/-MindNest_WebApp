@@ -80,6 +80,17 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 // Load mood chart
 async function loadMoodChart() {
+  const chartContainer = document.querySelector('.chart-container');
+  if (!chartContainer) return;
+  
+  // Show loading state BEFORE API call
+  chartContainer.innerHTML = `
+    <div class="text-center py-8">
+      <div class="loading-spinner mx-auto mb-4"></div>
+      <p class="text-gray-500">Loading mood data...</p>
+    </div>
+  `;
+  
   try {
     const endDate = new Date();
     const startDate = new Date();
@@ -87,19 +98,9 @@ async function loadMoodChart() {
     
     const data = await apiCall(`/mood?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`);
     
-    const ctx = document.getElementById('mood-chart');
-    if (!ctx) return;
-    
-    // Show loading state
-    ctx.parentElement.innerHTML = `
-      <div class="text-center py-8">
-        <div class="loading-spinner mx-auto mb-4"></div>
-        <p class="text-gray-500">Loading mood data...</p>
-      </div>
-    `;
-    
+    // Check if we have mood data
     if (!data.moods || data.moods.length === 0) {
-      ctx.parentElement.innerHTML = `
+      chartContainer.innerHTML = `
         <div class="text-center py-8">
           <div class="text-5xl mb-3">📊</div>
           <h3 class="text-lg font-semibold text-gray-800 mb-2">No mood data this week</h3>
@@ -110,14 +111,20 @@ async function loadMoodChart() {
       return;
     }
     
+    // Restore canvas element for chart
+    chartContainer.innerHTML = '<canvas id="mood-chart" role="img" aria-label="Weekly mood trend chart"></canvas>';
+    const ctx = document.getElementById('mood-chart');
+    if (!ctx) return;
+    
     const labels = data.moods.map(m => formatDate(m.date));
     const moodLevels = data.moods.map(m => m.moodLevel);
     
-    // Destroy existing chart
+    // Destroy existing chart if it exists
     if (moodChart) {
       moodChart.destroy();
     }
     
+    // Create new chart
     moodChart = new Chart(ctx, {
       type: 'line',
       data: {
@@ -128,7 +135,9 @@ async function loadMoodChart() {
           borderColor: 'rgb(139, 92, 246)',
           backgroundColor: 'rgba(139, 92, 246, 0.1)',
           tension: 0.4,
-          fill: true
+          fill: true,
+          pointRadius: 4,
+          pointHoverRadius: 6
         }]
       },
       options: {
@@ -138,18 +147,40 @@ async function loadMoodChart() {
           y: {
             beginAtZero: false,
             min: 1,
-            max: 10
+            max: 10,
+            ticks: {
+              stepSize: 1
+            }
           }
         },
         plugins: {
           legend: {
             display: false
+          },
+          tooltip: {
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            padding: 12,
+            titleFont: {
+              size: 14
+            },
+            bodyFont: {
+              size: 13
+            }
           }
         }
       }
     });
   } catch (error) {
     console.error('Error loading mood chart:', error);
+    // Show error state
+    chartContainer.innerHTML = `
+      <div class="text-center py-8">
+        <div class="text-5xl mb-3">😕</div>
+        <h3 class="text-lg font-semibold text-red-600 mb-2">Unable to load mood data</h3>
+        <p class="text-gray-600 text-sm mb-4">${error.message || 'Please try again later.'}</p>
+        <button onclick="location.reload()" class="btn-primary btn-sm">Retry</button>
+      </div>
+    `;
   }
 }
 

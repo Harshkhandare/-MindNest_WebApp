@@ -748,6 +748,65 @@ nav a:hover::after {
   }
 }
 
+/* Crisis Support Modal - Scrolling Fix */
+#crisis-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: var(--z-modal-backdrop);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  animation: fadeIn var(--transition-base);
+  overflow-y: auto;
+}
+
+#crisis-modal.hidden {
+  display: none;
+}
+
+.crisis-modal-content {
+  background: var(--bg-primary);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-2xl);
+  max-width: 42rem; /* max-w-2xl equivalent */
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: var(--z-modal);
+  animation: slideUp var(--transition-smooth);
+  border: 1px solid var(--border-light);
+  position: relative;
+}
+
+/* Smooth scrolling for crisis modal */
+.crisis-modal-content {
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary-300) var(--neutral-100);
+}
+
+.crisis-modal-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.crisis-modal-content::-webkit-scrollbar-track {
+  background: var(--neutral-100);
+  border-radius: var(--radius-full);
+}
+
+.crisis-modal-content::-webkit-scrollbar-thumb {
+  background: var(--primary-300);
+  border-radius: var(--radius-full);
+}
+
+.crisis-modal-content::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-400);
+}
+
 /* ============================================
    SECTION TITLES & PAGE TITLES
    ============================================ */

@@ -34,6 +34,11 @@ export const apiCall = async (endpoint, options = {}) => {
   const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
   
   try {
+    console.log(`🌐 API Call: ${options.method || 'GET'} ${API_BASE_URL}${endpoint}`, {
+      hasToken: !!token,
+      headers: Object.keys(headers)
+    });
+    
     const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       ...options,
       headers,
@@ -42,6 +47,12 @@ export const apiCall = async (endpoint, options = {}) => {
     });
     
     clearTimeout(timeoutId);
+    
+    console.log(`📥 API Response: ${response.status} ${response.statusText}`, {
+      ok: response.ok,
+      status: response.status,
+      headers: Object.fromEntries(response.headers.entries())
+    });
     
     if (!response.ok) {
       let errorMessage = 'Something went wrong';
@@ -67,18 +78,31 @@ export const apiCall = async (endpoint, options = {}) => {
       throw new Error(errorMessage);
     }
     
-    return await response.json();
+    const jsonData = await response.json();
+    console.log(`✅ API Success:`, {
+      endpoint,
+      dataKeys: Object.keys(jsonData),
+      dataType: Array.isArray(jsonData) ? 'array' : typeof jsonData
+    });
+    return jsonData;
   } catch (error) {
     clearTimeout(timeoutId);
     
     // Handle network errors
     if (error.name === 'AbortError') {
+      console.error('⏱️ API Timeout:', endpoint);
       throw new Error('Request timed out. Please check your connection and try again.');
     } else if (error.message === 'Failed to fetch') {
+      console.error('🌐 Network Error:', endpoint, error);
       throw new Error('Network error. Please check your connection and try again.');
     }
     
-    console.error('API Error:', error);
+    console.error('❌ API Error:', {
+      endpoint,
+      error: error.message,
+      name: error.name,
+      stack: error.stack
+    });
     throw error;
   }
 };

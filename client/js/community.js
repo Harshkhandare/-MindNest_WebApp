@@ -95,14 +95,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
   
-  // Show/hide "My Posts" filter based on authentication
-  const myPostsFilter = document.getElementById('my-posts-filter');
-  if (myPostsFilter) {
-    if (!isAuthenticated) {
-      myPostsFilter.style.display = 'none';
-    }
-  }
-  
   // Filter buttons
   document.querySelectorAll('.filter-btn').forEach(btn => {
     btn.addEventListener('click', async () => {
@@ -149,14 +141,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     });
   });
-  
-  // Show/hide "My Posts" filter based on authentication
-  const myPostsFilter = document.getElementById('my-posts-filter');
-  if (myPostsFilter) {
-    if (!isAuthenticated) {
-      myPostsFilter.style.display = 'none';
-    }
-  }
   
   // Load posts
   await loadPosts();
@@ -525,7 +509,7 @@ function attachPostListeners() {
             showToast(error.message || 'Failed to delete post', 'error');
           }
         }
-      }
+      });
     });
   });
 }

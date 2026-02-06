@@ -1,3 +1,6 @@
+// Import showToast for user feedback
+import { showToast } from './utils.js';
+
 // Dark mode toggle with system preference detection
 export const initDarkMode = () => {
   const darkModeToggle = document.getElementById('dark-mode-toggle');
@@ -99,8 +102,76 @@ export const initHighContrast = () => {
 // Text-to-speech
 export const initTextToSpeech = () => {
   const ttsToggle = document.getElementById('text-to-speech-toggle');
+  const textToSpeechCheckbox = document.getElementById('textToSpeech');
   let synth = window.speechSynthesis;
   
+  // Function to read main content
+  const readMainContent = () => {
+    if (!('speechSynthesis' in window)) {
+      showToast('Text-to-speech is not supported in your browser.', 'error');
+      return;
+    }
+    
+    synth.cancel(); // Cancel any ongoing speech
+    
+    const mainContent = document.querySelector('main');
+    if (!mainContent) {
+      showToast('No content found to read.', 'error');
+      return;
+    }
+    
+    // Get text content, excluding script tags and hidden elements
+    const text = Array.from(mainContent.querySelectorAll('*'))
+      .filter(el => {
+        const style = window.getComputedStyle(el);
+        return style.display !== 'none' && 
+               style.visibility !== 'hidden' && 
+               el.tagName !== 'SCRIPT' && 
+               el.tagName !== 'STYLE' &&
+               el.tagName !== 'BUTTON' &&
+               !el.closest('nav') &&
+               !el.closest('header');
+      })
+      .map(el => {
+        // Get direct text content, not nested
+        return Array.from(el.childNodes)
+          .filter(node => node.nodeType === Node.TEXT_NODE)
+          .map(node => node.textContent.trim())
+          .filter(text => text.length > 0)
+          .join(' ');
+      })
+      .filter(text => text.length > 0)
+      .join('. ')
+      .replace(/\s+/g, ' ')
+      .trim();
+    
+    if (text) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 0.9;
+      utterance.pitch = 1;
+      utterance.volume = 1;
+      
+      synth.speak(utterance);
+      
+      utterance.onend = () => {
+        if (ttsToggle) ttsToggle.setAttribute('aria-pressed', 'false');
+        if (textToSpeechCheckbox) textToSpeechCheckbox.checked = false;
+      };
+      
+      utterance.onerror = (e) => {
+        console.error('Speech synthesis error:', e);
+        if (ttsToggle) ttsToggle.setAttribute('aria-pressed', 'false');
+        if (textToSpeechCheckbox) textToSpeechCheckbox.checked = false;
+      };
+      
+      if (ttsToggle) ttsToggle.setAttribute('aria-pressed', 'true');
+      if (textToSpeechCheckbox) textToSpeechCheckbox.checked = true;
+    } else {
+      showToast('No readable content found.', 'error');
+    }
+  };
+  
+  // Handle toggle button (if exists)
   if (ttsToggle) {
     ttsToggle.addEventListener('click', () => {
       const isActive = ttsToggle.getAttribute('aria-pressed') === 'true';
@@ -108,19 +179,32 @@ export const initTextToSpeech = () => {
       if (isActive) {
         synth.cancel();
         ttsToggle.setAttribute('aria-pressed', 'false');
+        if (textToSpeechCheckbox) textToSpeechCheckbox.checked = false;
       } else {
-        const text = document.querySelector('main')?.textContent || '';
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.rate = 0.9;
-        utterance.pitch = 1;
-        synth.speak(utterance);
-        ttsToggle.setAttribute('aria-pressed', 'true');
-        
-        utterance.onend = () => {
-          ttsToggle.setAttribute('aria-pressed', 'false');
-        };
+        readMainContent();
       }
     });
+  }
+  
+  // Handle preferences checkbox (if exists)
+  if (textToSpeechCheckbox) {
+    textToSpeechCheckbox.addEventListener('change', (e) => {
+      if (e.target.checked) {
+        readMainContent();
+      } else {
+        synth.cancel();
+        if (ttsToggle) ttsToggle.setAttribute('aria-pressed', 'false');
+      }
+    });
+    
+    // Auto-read if preference is enabled on page load
+    const savedTTS = localStorage.getItem('textToSpeech') === 'true';
+    if (savedTTS && textToSpeechCheckbox.checked) {
+      // Small delay to ensure page is fully loaded
+      setTimeout(() => {
+        readMainContent();
+      }, 500);
+    }
   }
 };
 

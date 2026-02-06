@@ -1,4 +1,4 @@
-import { apiCall, requireAuth, showToast, formatDate, showSkeleton, setButtonLoading, showConfirmation } from './utils.js';
+import { apiCall, requireAuth, showToast, formatDate, showSkeleton, setButtonLoading, showConfirmation, getAuthToken } from './utils.js';
 import { initSocket, getSocket } from './socket-client.js';
 
 // Check authentication (allow access but show message if not logged in)
@@ -15,14 +15,51 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (isAuthenticated) {
     initSocket();
     
-    // Listen for real-time goal updates
-    const socket = getSocket();
-    if (socket) {
-      socket.on('goal:changed', (data) => {
-        showToast('Goal updated!', 'success');
-        loadGoals(); // Reload goals list
-      });
-    }
+    // Wait for socket to connect, then set up listeners
+    const setupSocketListeners = () => {
+      const socket = getSocket();
+      if (socket && socket.connected) {
+        console.log('✅ Setting up goal Socket.IO listeners');
+        
+        socket.on('goal:changed', (data) => {
+          console.log('Goal changed event received:', data);
+          showToast('Goal updated!', 'success');
+          loadGoals(); // Reload goals list
+        });
+        
+        socket.on('goal:created', (data) => {
+          console.log('Goal created event received:', data);
+          showToast('New goal added!', 'success');
+          loadGoals();
+        });
+        
+        socket.on('goal:deleted', (data) => {
+          console.log('Goal deleted event received:', data);
+          showToast('Goal deleted', 'success');
+          loadGoals();
+        });
+      } else {
+        // Socket not ready yet, wait for connection
+        console.log('⏳ Socket not ready, waiting for connection...');
+        setTimeout(setupSocketListeners, 500);
+      }
+    };
+    
+    // Try to set up listeners immediately
+    setupSocketListeners();
+    
+    // Also listen for socket connection event
+    window.addEventListener('socket:connected', () => {
+      console.log('✅ Socket connected, setting up goal listeners');
+      setupSocketListeners();
+    });
+    
+    // Also use window events as fallback (already set up in socket-client.js)
+    window.addEventListener('goal:changed', (e) => {
+      console.log('Goal changed via window event:', e.detail);
+      showToast('Goal updated!', 'success');
+      loadGoals();
+    });
   }
   // Form submission
   const goalForm = document.getElementById('goal-form');
@@ -89,15 +126,27 @@ async function loadGoals() {
   const container = document.getElementById('goals-container');
   
   if (!container) {
-    console.error('Goals container not found');
+    console.error('❌ Goals container not found');
     return;
   }
   
   // Show loading state
-  showSkeleton(container, 'card', 3);
+  container.innerHTML = `
+    <div class="text-center py-12">
+      <div class="loading-spinner mx-auto mb-4"></div>
+      <p class="text-gray-500">Loading your goals...</p>
+    </div>
+  `;
   
   // Check if user is authenticated
-  if (!isAuthenticated) {
+  const token = getAuthToken();
+  console.log('🔐 Authentication check:', {
+    isAuthenticated,
+    hasToken: !!token,
+    tokenLength: token ? token.length : 0
+  });
+  
+  if (!isAuthenticated || !token) {
     container.innerHTML = `
       <div class="text-center py-12">
         <div class="text-6xl mb-4">🔒</div>
@@ -110,14 +159,42 @@ async function loadGoals() {
   }
   
   try {
+    console.log('📡 Making API call to /api/goals...');
+    const startTime = Date.now();
+    
     const data = await apiCall('/goals');
     
+    const duration = Date.now() - startTime;
+    console.log('✅ Goals API response received:', {
+      data,
+      duration: `${duration}ms`,
+      hasGoals: !!(data && data.goals),
+      goalsCount: data && data.goals ? data.goals.length : 0
+    });
+    
     if (!data) {
-      container.innerHTML = '<p class="text-red-500 text-center py-8">Error: No data received from server.</p>';
+      console.error('❌ No data received from API');
+      container.innerHTML = `
+        <div class="text-center py-12">
+          <div class="text-6xl mb-4">⚠️</div>
+          <h3 class="text-xl font-semibold text-red-600 mb-2">No data received</h3>
+          <p class="text-gray-600 mb-6">The server didn't return any data. Please check the console for details.</p>
+          <button onclick="loadGoals()" class="btn-primary">Retry</button>
+        </div>
+      `;
       return;
     }
     
-    if (!data.goals || data.goals.length === 0) {
+    // Handle both { goals: [...] } and direct array response
+    const goals = data.goals || (Array.isArray(data) ? data : []);
+    
+    console.log('📊 Processed goals:', {
+      totalGoals: goals.length,
+      goals: goals.map(g => ({ id: g.id || g._id, title: g.title, status: g.status }))
+    });
+    
+    if (!Array.isArray(goals) || goals.length === 0) {
+      console.log('ℹ️ No goals found - showing empty state');
       container.innerHTML = `
         <div class="text-center py-12">
           <div class="text-6xl mb-4">🎯</div>
@@ -129,8 +206,8 @@ async function loadGoals() {
     }
     
     // Separate by status
-    const activeGoals = data.goals.filter(g => g.status !== 'completed' && g.status !== 'cancelled');
-    const completedGoals = data.goals.filter(g => g.status === 'completed');
+    const activeGoals = goals.filter(g => g.status !== 'completed' && g.status !== 'cancelled');
+    const completedGoals = goals.filter(g => g.status === 'completed');
     
     let html = '';
     
@@ -149,12 +226,19 @@ async function loadGoals() {
       return;
     }
     
+    console.log('✅ Rendering goals HTML...');
     container.innerHTML = html;
     
     // Attach event listeners
     attachGoalListeners();
+    console.log('✅ Goals loaded and displayed successfully!');
   } catch (error) {
-    console.error('Error loading goals:', error);
+    console.error('❌ Error loading goals:', error);
+    console.error('Error details:', {
+      message: error.message,
+      stack: error.stack,
+      name: error.name
+    });
     const errorMessage = error.message || 'Unable to load goals';
     
     if (errorMessage.includes('Authentication') || errorMessage.includes('401')) {
@@ -180,13 +264,20 @@ async function loadGoals() {
         <div class="text-center py-12">
           <div class="text-6xl mb-4">😕</div>
           <h3 class="text-xl font-semibold text-red-600 mb-2">Unable to load goals</h3>
-          <p class="text-gray-600 mb-6">${errorMessage}</p>
-          <button onclick="location.reload()" class="btn-primary">Retry</button>
+          <p class="text-gray-600 mb-4">${errorMessage}</p>
+          <p class="text-xs text-gray-500 mb-6">Check the browser console (F12) for more details</p>
+          <div class="flex gap-3 justify-center">
+            <button onclick="loadGoals()" class="btn-primary">Retry</button>
+            <button onclick="location.reload()" class="btn-secondary">Reload Page</button>
+          </div>
         </div>
       `;
     }
   }
 }
+
+// Make loadGoals available globally for retry buttons
+window.loadGoals = loadGoals;
 
 function createGoalCard(goal) {
   const progress = goal.progress || 0;
@@ -387,93 +478,180 @@ async function editGoal(id) {
 }
 
 function showProgressUpdateModal(goalId, currentProgress) {
+  // Remove any existing modal
+  const existingModal = document.querySelector('.progress-update-modal');
+  if (existingModal) {
+    existingModal.remove();
+  }
+  
   const modal = document.createElement('div');
-  modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+  modal.className = 'progress-update-modal modal-backdrop';
+  modal.setAttribute('role', 'dialog');
+  modal.setAttribute('aria-modal', 'true');
+  modal.setAttribute('aria-labelledby', 'progress-modal-title');
+  
   modal.innerHTML = `
-    <div class="bg-white rounded-lg p-8 max-w-md mx-4">
-      <h2 class="text-2xl font-bold mb-4">Update Progress</h2>
-      <div class="mb-6">
-        <label class="block text-sm font-medium mb-2">Progress: <span id="progress-value">${currentProgress}</span>%</label>
-        <input 
-          type="range" 
-          id="progress-slider" 
-          min="0" 
-          max="100" 
-          value="${currentProgress}" 
-          class="w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-        >
-        <div class="flex justify-between text-xs text-gray-500 mt-1">
-          <span>0%</span>
-          <span>50%</span>
-          <span>100%</span>
+    <div class="modal" style="max-width: 500px; animation: fadeIn 200ms ease-out;">
+      <div class="p-6">
+        <!-- Header with close button -->
+        <div class="flex items-center justify-between mb-6">
+          <h2 id="progress-modal-title" class="text-2xl font-bold" style="color: var(--text-primary);">
+            📊 Update Progress
+          </h2>
+          <button 
+            id="close-progress-modal" 
+            class="text-gray-400 hover:text-gray-600 transition-colors"
+            aria-label="Close modal"
+            style="font-size: 1.5rem; line-height: 1; padding: 0.25rem;"
+          >
+            ×
+          </button>
         </div>
-      </div>
-      <div class="mb-4">
-        <label class="block text-sm font-medium mb-2">Status</label>
-        <select id="status-select" class="input-field w-full">
-          <option value="pending">Pending</option>
-          <option value="in-progress">In Progress</option>
-          <option value="completed">Completed</option>
-          <option value="cancelled">Cancelled</option>
-        </select>
-      </div>
-      <div class="flex space-x-4">
-        <button class="btn-primary flex-1" id="save-progress-btn">Save Changes</button>
-        <button class="btn-secondary flex-1" id="cancel-progress-btn">Cancel</button>
+        
+        <!-- Progress Slider -->
+        <div class="mb-6">
+          <label class="block text-sm font-medium mb-3" style="color: var(--text-primary);">
+            Progress: <span id="progress-value" class="font-semibold text-purple-600">${currentProgress}</span>%
+          </label>
+          <input 
+            type="range" 
+            id="progress-slider" 
+            min="0" 
+            max="100" 
+            value="${currentProgress}" 
+            class="w-full h-3 bg-gray-200 rounded-lg appearance-none cursor-pointer transition-all"
+            style="background: linear-gradient(to right, #8B5CF6 0%, #8B5CF6 ${currentProgress}%, #E5E7EB ${currentProgress}%, #E5E7EB 100%);"
+          >
+          <div class="flex justify-between text-xs text-gray-500 mt-2">
+            <span>0%</span>
+            <span>50%</span>
+            <span>100%</span>
+          </div>
+        </div>
+        
+        <!-- Status Dropdown -->
+        <div class="mb-6">
+          <label for="status-select" class="block text-sm font-medium mb-2" style="color: var(--text-primary);">
+            Status
+          </label>
+          <select id="status-select" class="input-field w-full">
+            <option value="pending">Pending</option>
+            <option value="in-progress">In Progress</option>
+            <option value="completed">Completed</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="flex gap-3">
+          <button class="btn-secondary flex-1" id="cancel-progress-btn">
+            Cancel
+          </button>
+          <button class="btn-primary flex-1" id="save-progress-btn">
+            💾 Save Changes
+          </button>
+        </div>
       </div>
     </div>
   `;
   
   document.body.appendChild(modal);
+  modal.style.display = 'flex';
   
-  // Update progress value display
+  // Update progress slider background dynamically
+  const updateSliderBackground = (value) => {
+    const slider = modal.querySelector('#progress-slider');
+    if (slider) {
+      slider.style.background = `linear-gradient(to right, #8B5CF6 0%, #8B5CF6 ${value}%, #E5E7EB ${value}%, #E5E7EB 100%)`;
+    }
+  };
+  
+  // Update progress value display and slider background
   const slider = modal.querySelector('#progress-slider');
   const progressValue = modal.querySelector('#progress-value');
-  slider.addEventListener('input', (e) => {
-    progressValue.textContent = e.target.value;
-  });
+  
+  if (slider && progressValue) {
+    slider.addEventListener('input', (e) => {
+      const value = e.target.value;
+      progressValue.textContent = value;
+      updateSliderBackground(value);
+    });
+  }
   
   // Load current status
   apiCall(`/goals/${goalId}`).then(data => {
     const statusSelect = modal.querySelector('#status-select');
-    if (statusSelect && data.goal.status) {
+    if (statusSelect && data.goal && data.goal.status) {
       statusSelect.value = data.goal.status;
     }
-  }).catch(() => {});
-  
-  // Save button
-  modal.querySelector('#save-progress-btn').addEventListener('click', async () => {
-    const progress = parseInt(slider.value);
-    const status = modal.querySelector('#status-select').value;
-    const saveBtn = modal.querySelector('#save-progress-btn');
-    
-    setButtonLoading(saveBtn, true, 'Saving...');
-    
-    try {
-      await apiCall(`/goals/${goalId}`, {
-        method: 'PUT',
-        body: JSON.stringify({ progress, status })
-      });
-      showToast('Progress updated!', 'success');
-      modal.remove();
-      await loadGoals();
-    } catch (error) {
-      setButtonLoading(saveBtn, false);
-      showToast(error.message || 'Failed to update progress', 'error');
-    }
+  }).catch((error) => {
+    console.error('Error loading goal status:', error);
   });
+  
+  // Close modal function
+  const closeModal = () => {
+    modal.style.animation = 'fadeOut 200ms ease-out';
+    setTimeout(() => {
+      modal.remove();
+    }, 200);
+  };
+  
+  // Close button (X)
+  const closeBtn = modal.querySelector('#close-progress-btn');
+  if (closeBtn) {
+    closeBtn.addEventListener('click', closeModal);
+  }
   
   // Cancel button
-  modal.querySelector('#cancel-progress-btn').addEventListener('click', () => {
-    modal.remove();
-  });
+  const cancelBtn = modal.querySelector('#cancel-progress-btn');
+  if (cancelBtn) {
+    cancelBtn.addEventListener('click', closeModal);
+  }
+  
+  // Save button
+  const saveBtn = modal.querySelector('#save-progress-btn');
+  if (saveBtn) {
+    saveBtn.addEventListener('click', async () => {
+      const progress = parseInt(slider.value);
+      const status = modal.querySelector('#status-select').value;
+      
+      setButtonLoading(saveBtn, true, 'Saving...');
+      
+      try {
+        await apiCall(`/goals/${goalId}`, {
+          method: 'PUT',
+          body: JSON.stringify({ progress, status })
+        });
+        showToast('Progress updated successfully! ✨', 'success');
+        closeModal();
+        await loadGoals();
+      } catch (error) {
+        setButtonLoading(saveBtn, false);
+        showToast(error.message || 'Failed to update progress', 'error');
+      }
+    });
+  }
   
   // Close on background click
   modal.addEventListener('click', (e) => {
     if (e.target === modal) {
-      modal.remove();
+      closeModal();
     }
   });
+  
+  // Close on Escape key
+  const handleEscape = (e) => {
+    if (e.key === 'Escape') {
+      closeModal();
+      document.removeEventListener('keydown', handleEscape);
+    }
+  };
+  document.addEventListener('keydown', handleEscape);
+  
+  // Focus on slider for accessibility
+  setTimeout(() => {
+    if (slider) slider.focus();
+  }, 100);
 }
 
 // Add CSS for progress slider
