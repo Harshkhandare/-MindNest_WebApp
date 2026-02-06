@@ -22,6 +22,29 @@ export const removeCurrentUser = () => localStorage.removeItem(USER_KEY);
 
 // API calls with credentials for cookie support
 export const apiCall = async (endpoint, options = {}) => {
+  // Demo mode: Return mock data for hackathon demo
+  if (API_BASE_URL === null || API_BASE_URL === undefined) {
+    console.log('🎭 Demo Mode: Simulating API call for', endpoint);
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        // Return appropriate mock data based on endpoint
+        if (endpoint.includes('/mood')) {
+          resolve({ moods: [], stats: { average: 5, count: 0 } });
+        } else if (endpoint.includes('/journal')) {
+          resolve({ journals: [] });
+        } else if (endpoint.includes('/goals')) {
+          resolve({ goals: [] });
+        } else if (endpoint.includes('/community')) {
+          resolve({ posts: [] });
+        } else if (endpoint.includes('/user/profile')) {
+          resolve({ user: { username: 'Demo User', email: 'demo@mindnest.com' } });
+        } else {
+          resolve({ message: 'Demo mode - feature not available' });
+        }
+      }, 500); // Simulate network delay
+    });
+  }
+  
   const token = getAuthToken();
   const headers = {
     'Content-Type': 'application/json',
