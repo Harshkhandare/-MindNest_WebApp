@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Self-Care Library - MindNest</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="min-h-screen bg-gradient-to-br from-purple-50 via-white to-teal-50">
+  <header class="header">
+    <nav class="container mx-auto px-4 py-6">
+      <div class="flex items-center justify-between">
+        <a href="index.html" class="flex items-center space-x-2">
+          <span class="text-3xl">🧠</span>
+          <h1 class="text-2xl font-bold text-purple-600">MindNest</h1>
+        </a>
+        <div class="flex items-center space-x-4">
+          <a href="dashboard.html" class="btn-secondary">Dashboard</a>
+          <a href="profile.html" class="btn-secondary">Profile</a>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container mx-auto px-4 py-8">
+    <h1 class="text-4xl font-bold text-gray-800 mb-4">Self-Care Activity Library</h1>
+    <p class="text-gray-600 mb-8">Choose activities that help you feel better. Take your time and be kind to yourself.</p>
+
+    <div id="self-care-library"></div>
+  </main>
+
+  <script type="module" src="js/self-care-library.js"></script>
+  <script type="module" src="js/crisis-support.js"></script>
+  <script type="module" src="js/quick-mood.js"></script>
+</body>
+</html>
+
+

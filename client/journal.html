@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Private Journal - MindNest">
+  <title>Journal - MindNest</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body role="document" class="min-h-screen bg-gray-50">
+  <header role="banner" class="bg-white shadow-sm">
+    <nav role="navigation" aria-label="Main navigation" class="container mx-auto px-4 py-4">
+      <div class="flex items-center justify-between">
+        <a href="dashboard.html" class="flex items-center space-x-2">
+          <span class="text-2xl">🧠</span>
+          <span class="text-xl font-bold text-purple-600">MindNest</span>
+        </a>
+        <nav class="flex items-center space-x-4">
+          <a href="dashboard.html" class="text-gray-600 hover:text-purple-600">Dashboard</a>
+          <a href="mood.html" class="text-gray-600 hover:text-purple-600">Mood</a>
+          <a href="goals.html" class="text-gray-600 hover:text-purple-600">Goals</a>
+        </nav>
+      </div>
+    </nav>
+  </header>
+
+  <main role="main" class="container mx-auto px-4 py-8">
+    <section aria-labelledby="journal-entry" class="mb-8">
+      <h1 id="journal-entry" class="page-title">Your Private Journal</h1>
+      
+      <form id="journal-form" aria-label="Journal entry form" class="card max-w-4xl mx-auto">
+        <div class="journal-header mb-4">
+          <input 
+            type="text" 
+            id="journal-title"
+            name="title"
+            placeholder="Entry title (optional)"
+            maxlength="100"
+            class="input-field mb-2"
+          >
+          <div class="journal-meta flex items-center justify-between text-sm text-gray-500">
+            <time id="entry-date"></time>
+            <span class="privacy-indicator" aria-label="Private entry">
+              🔒 Private
+            </span>
+          </div>
+        </div>
+        
+        <textarea 
+          id="journal-content"
+          name="content"
+          rows="15"
+          placeholder="Write your thoughts here... This is your safe space."
+          required
+          class="input-field mb-4"
+          aria-label="Journal entry content"
+        ></textarea>
+        
+        <div class="journal-actions flex space-x-4">
+          <button type="submit" class="btn-primary flex-1">
+            Save Entry
+          </button>
+          <button type="button" id="clear-journal" class="btn-secondary">
+            Clear
+          </button>
+        </div>
+      </form>
+    </section>
+    
+    <section aria-labelledby="journal-list" class="mt-12">
+      <h2 id="journal-list" class="section-title">Previous Entries</h2>
+      <div class="journal-search mb-4">
+        <input 
+          type="search" 
+          id="journal-search"
+          placeholder="Search entries..."
+          aria-label="Search journal entries"
+          class="input-field"
+        >
+      </div>
+      <div id="journal-entries-list" class="space-y-4" role="list"></div>
+    </section>
+  </main>
+
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script type="module" src="js/journal.js"></script>
+    <script type="module" src="js/journal-enhancements.js"></script>
+    <script type="module" src="js/accessibility.js"></script>
+  <script type="module" src="js/crisis-support.js"></script>
+  <script type="module" src="js/quick-mood.js"></script>
+</body>
+</html>
+

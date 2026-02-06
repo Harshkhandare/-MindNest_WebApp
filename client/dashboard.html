@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="MindNest Dashboard - Your mental health companion">
+  <title>Dashboard - MindNest</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body role="document" class="min-h-screen" style="background: var(--bg-secondary);">
+  <a href="#main-content" class="skip-to-main">Skip to main content</a>
+  <header role="banner">
+    <nav role="navigation" aria-label="Main navigation" class="container mx-auto px-4 py-4 max-w-7xl">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <span class="text-2xl" aria-hidden="true">🧠</span>
+          <a href="dashboard.html" class="text-xl font-bold text-gradient">MindNest</a>
+        </div>
+        <div class="flex items-center space-x-4">
+          <a href="profile.html" style="color: var(--text-secondary);" aria-label="View your profile">Profile</a>
+          <button id="logout-btn" class="btn-secondary btn-sm" aria-label="Logout from your account">Logout</button>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main-content" role="main" class="container mx-auto px-4 py-8 max-w-7xl">
+    <section aria-labelledby="greeting-heading" class="mb-10 animate-fade-in">
+      <h1 id="greeting-heading" class="page-title">
+        Good <span id="time-of-day">morning</span>, <span id="user-name">User</span>!
+      </h1>
+      <p class="text-lg" style="color: var(--text-secondary); margin-top: var(--space-2);">How are you feeling today?</p>
+    </section>
+
+    <section aria-labelledby="quick-actions" class="mb-10">
+      <h2 id="quick-actions" class="section-title">Quick Actions</h2>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <a href="mood.html" class="action-card card-interactive" aria-label="Track your mood">
+          <span class="text-4xl mb-3" aria-hidden="true">😊</span>
+          <span class="font-semibold" style="color: var(--text-primary);">Track Mood</span>
+        </a>
+        <a href="journal.html" class="action-card card-interactive" aria-label="Write in journal">
+          <span class="text-4xl mb-3" aria-hidden="true">📝</span>
+          <span class="font-semibold" style="color: var(--text-primary);">Journal</span>
+        </a>
+        <a href="goals.html" class="action-card card-interactive" aria-label="View goals">
+          <span class="text-4xl mb-3" aria-hidden="true">🎯</span>
+          <span class="font-semibold" style="color: var(--text-primary);">Goals</span>
+        </a>
+        <a href="community.html" class="action-card card-interactive" aria-label="Community support">
+          <span class="text-4xl mb-3" aria-hidden="true">💬</span>
+          <span class="font-semibold" style="color: var(--text-primary);">Community</span>
+        </a>
+      </div>
+    </section>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      <section aria-labelledby="mood-summary" class="card">
+        <h2 id="mood-summary" class="section-title">Your Mood This Week</h2>
+        <div class="chart-container">
+          <canvas id="mood-chart" role="img" aria-label="Weekly mood trend chart"></canvas>
+        </div>
+      </section>
+
+      <section aria-labelledby="quote-section" class="card">
+        <h2 id="quote-section" class="section-title">Daily Inspiration</h2>
+        <blockquote class="quote-card">
+          <p class="quote-text" id="motivational-quote">Loading...</p>
+          <footer class="quote-author">— MindNest</footer>
+        </blockquote>
+      </section>
+    </div>
+
+    <section aria-labelledby="recent-activity" class="mb-8">
+      <h2 id="recent-activity" class="section-title">Recent Activity</h2>
+      <div id="recent-journals" class="space-y-4">
+        <p class="text-gray-500">Loading...</p>
+      </div>
+    </section>
+
+    <section aria-labelledby="weekly-report" class="mb-8">
+      <h2 id="weekly-report" class="section-title">Weekly Wellness Report</h2>
+      <div id="weekly-report-container">
+        <p class="text-gray-500">Loading...</p>
+      </div>
+    </section>
+
+    <section aria-labelledby="habits" class="mb-8">
+      <h2 id="habits" class="section-title">Habit Tracking & Streaks</h2>
+      <div id="habits-container">
+        <p class="text-gray-500">Loading...</p>
+      </div>
+    </section>
+
+    <section aria-labelledby="insights-link" class="mb-8">
+      <div class="card bg-gradient-to-r from-purple-500 to-teal-500 text-white">
+        <h2 id="insights-link" class="text-2xl font-semibold mb-2">📊 View Detailed Insights</h2>
+        <p class="mb-4">Get personalized mood insights, patterns, and recommendations</p>
+        <a href="insights.html" class="btn-primary bg-white text-purple-600 hover:bg-gray-100">View Insights</a>
+      </div>
+    </section>
+  </main>
+
+  <div class="accessibility-panel fixed bottom-4 right-4" role="toolbar" aria-label="Accessibility options">
+    <button id="dark-mode-toggle" class="accessibility-btn" aria-label="Toggle dark mode" aria-pressed="false">
+      🌙 Dark Mode
+    </button>
+  </div>
+
+  <script type="module" src="js/dashboard.js"></script>
+  <script type="module" src="js/weekly-report.js"></script>
+  <script type="module" src="js/habit-tracker.js"></script>
+  <script type="module" src="js/accessibility.js"></script>
+  <script type="module" src="js/crisis-support.js"></script>
+  <script type="module" src="js/quick-mood.js"></script>
+</body>
+</html>
+

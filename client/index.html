@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="MindNest - Mental Health Support App. You're not alone. One step at a time.">
+  <title>MindNest - Mental Health Support</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body role="document" class="min-h-screen" style="background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-primary) 50%, var(--bg-gradient-end) 100%);">
+  <a href="#main-content" class="skip-to-main">Skip to main content</a>
+  <header role="banner">
+    <nav role="navigation" aria-label="Main navigation" class="container mx-auto px-4 py-6">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <span class="text-3xl" aria-hidden="true">🧠</span>
+          <h1 class="text-2xl font-bold text-gradient">MindNest</h1>
+        </div>
+        <div class="flex items-center space-x-4">
+          <a href="login.html" class="btn-secondary btn-sm" aria-label="Login to your account">Login</a>
+          <a href="signup.html" class="btn-primary btn-sm" aria-label="Create a new account">Get Started</a>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main-content" role="main" class="container mx-auto px-4 py-12 max-w-7xl">
+    <section aria-labelledby="hero-heading" class="text-center mb-20 animate-fade-in">
+      <h1 id="hero-heading" class="page-title text-center">
+        You're not alone.<br>
+        <span class="text-gradient">One step at a time.</span>
+      </h1>
+      <p class="text-xl text-secondary mb-10 max-w-2xl mx-auto" style="color: var(--text-secondary);">
+        MindNest is your compassionate companion for mental health support, offering tools and resources to help you manage depression and build resilience.
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="signup.html" class="btn-primary btn-lg" aria-label="Start your mental health journey">Start Your Journey</a>
+        <a href="#features" class="btn-secondary btn-lg" aria-label="Learn more about MindNest features">Learn More</a>
+      </div>
+    </section>
+
+    <section id="features" aria-labelledby="features-heading" class="my-20">
+      <h2 id="features-heading" class="section-title text-center">How MindNest Helps</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <a href="mood.html" class="card feature-card card-interactive" aria-label="Track your mood and emotional patterns">
+          <div class="text-5xl mb-4" aria-hidden="true">😊</div>
+          <h3 class="text-xl font-semibold mb-3" style="color: var(--text-primary);">Mood Tracking</h3>
+          <p style="color: var(--text-secondary);">Track your daily emotional states and visualize patterns over time to better understand your mental health journey.</p>
+        </a>
+        
+        <a href="journal.html" class="card feature-card card-interactive" aria-label="Write in your private journal">
+          <div class="text-5xl mb-4" aria-hidden="true">📝</div>
+          <h3 class="text-xl font-semibold mb-3" style="color: var(--text-primary);">Private Journaling</h3>
+          <p style="color: var(--text-secondary);">Express your thoughts and feelings in a secure, private space designed for self-reflection and emotional release.</p>
+        </a>
+        
+        <a href="goals.html" class="card feature-card card-interactive" aria-label="Set and track your goals">
+          <div class="text-5xl mb-4" aria-hidden="true">🎯</div>
+          <h3 class="text-xl font-semibold mb-3" style="color: var(--text-primary);">Goal Setting</h3>
+          <p style="color: var(--text-secondary);">Set achievable daily, weekly, or monthly goals and track your progress toward better mental wellness.</p>
+        </a>
+        
+        <a href="community.html" class="card feature-card card-interactive" aria-label="Connect with the community">
+          <div class="text-5xl mb-4" aria-hidden="true">💬</div>
+          <h3 class="text-xl font-semibold mb-3" style="color: var(--text-primary);">Peer Support</h3>
+          <p style="color: var(--text-secondary);">Connect with a supportive community where you can share experiences and find understanding without judgment.</p>
+        </a>
+        
+        <a href="coping.html" class="card feature-card card-interactive" aria-label="Access coping strategies">
+          <div class="text-5xl mb-4" aria-hidden="true">🧘</div>
+          <h3 class="text-xl font-semibold mb-3" style="color: var(--text-primary);">Coping Strategies</h3>
+          <p style="color: var(--text-secondary);">Access mindfulness exercises, breathing techniques, and evidence-based coping strategies for managing depression.</p>
+        </a>
+        
+        <a href="resources.html" class="card feature-card card-interactive" aria-label="Browse educational resources">
+          <div class="text-5xl mb-4" aria-hidden="true">📚</div>
+          <h3 class="text-xl font-semibold mb-3" style="color: var(--text-primary);">Educational Resources</h3>
+          <p style="color: var(--text-secondary);">Learn about depression, treatment options, and mental health through curated articles and educational content.</p>
+        </a>
+      </div>
+    </section>
+
+    <section aria-labelledby="quote-section" class="my-20">
+      <blockquote class="quote-card text-center max-w-3xl mx-auto animate-fade-in">
+        <p class="quote-text text-2xl italic mb-4" style="color: var(--text-primary);">
+          "Recovery is not a destination, but a journey. Every step forward, no matter how small, is progress."
+        </p>
+        <footer class="quote-author" style="color: var(--text-secondary);">— MindNest</footer>
+      </blockquote>
+    </section>
+  </main>
+
+  <footer role="contentinfo" style="background: var(--neutral-900); color: var(--text-inverse);" class="py-8 mt-20">
+    <div class="container mx-auto px-4 text-center max-w-7xl">
+      <p class="mb-2">&copy; 2024 MindNest. All rights reserved.</p>
+      <p style="color: var(--text-muted);" class="text-sm">If you're in crisis, please call 988 or your local emergency number.</p>
+    </div>
+  </footer>
+
+  <script type="module" src="js/accessibility.js"></script>
+  <script type="module" src="js/crisis-support.js"></script>
+</body>
+</html>
+

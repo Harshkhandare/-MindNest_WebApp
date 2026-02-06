@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mood Insights - MindNest</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-purple-50 via-white to-teal-50">
+  <header class="header">
+    <nav class="container mx-auto px-4 py-6">
+      <div class="flex items-center justify-between">
+        <a href="index.html" class="flex items-center space-x-2">
+          <span class="text-3xl">🧠</span>
+          <h1 class="text-2xl font-bold text-purple-600">MindNest</h1>
+        </a>
+        <div class="flex items-center space-x-4">
+          <a href="dashboard.html" class="btn-secondary">Dashboard</a>
+          <a href="profile.html" class="btn-secondary">Profile</a>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container mx-auto px-4 py-8">
+    <h1 class="text-4xl font-bold text-gray-800 mb-8">Mood Insights & Analytics</h1>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      <!-- Insights Card -->
+      <div class="card">
+        <h2 class="text-2xl font-semibold mb-4">📊 Your Insights</h2>
+        <div id="insights-container" class="space-y-3">
+          <p class="text-gray-500">Loading insights...</p>
+        </div>
+      </div>
+
+      <!-- Patterns Card -->
+      <div class="card">
+        <h2 class="text-2xl font-semibold mb-4">🔍 Patterns Detected</h2>
+        <div id="patterns-container" class="space-y-3">
+          <p class="text-gray-500">Analyzing patterns...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recommendations -->
+    <div class="card mb-8">
+      <h2 class="text-2xl font-semibold mb-4">💡 Recommendations</h2>
+      <div id="recommendations-container" class="space-y-2">
+        <p class="text-gray-500">Loading recommendations...</p>
+      </div>
+    </div>
+
+    <!-- Stats Summary -->
+    <div class="card">
+      <h2 class="text-2xl font-semibold mb-4">📈 Statistics</h2>
+      <div id="stats-container" class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <p class="text-gray-500">Loading stats...</p>
+      </div>
+    </div>
+  </main>
+
+  <script type="module" src="js/insights.js"></script>
+  <script type="module" src="js/mood-calendar.js"></script>
+  <script type="module" src="js/crisis-support.js"></script>
+  <script type="module" src="js/quick-mood.js"></script>
+</body>
+</html>
+

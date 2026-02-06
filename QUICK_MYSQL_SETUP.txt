@@ -1,0 +1,45 @@
+===========================================
+QUICK MYSQL USER SETUP - HARSHKANT
+===========================================
+
+I've created a simple batch file for you!
+
+TO CREATE THE USER:
+
+Option 1: Double-click "create-user.bat"
+   - It will ask for your MySQL root password
+   - Enter your password and press Enter
+   - Done!
+
+Option 2: Run in Command Prompt:
+   create-user.bat
+
+Option 3: Manual MySQL Command:
+   1. Open Command Prompt
+   2. Run: mysql -u root -p
+   3. Enter your MySQL root password
+   4. Copy and paste these commands:
+
+CREATE DATABASE IF NOT EXISTS mindnest;
+CREATE USER IF NOT EXISTS 'Harshkant'@'localhost' IDENTIFIED BY 'Harsh@9712';
+GRANT ALL PRIVILEGES ON mindnest.* TO 'Harshkant'@'localhost';
+FLUSH PRIVILEGES;
+
+===========================================
+AFTER CREATING THE USER:
+===========================================
+
+1. Restart the server:
+   npm run dev
+
+2. You should see:
+   ✅ MySQL Connected: localhost
+   ✅ Database tables initialized
+
+3. Test it:
+   Go to: http://localhost:3000/signup.html
+
+===========================================
+
+
+

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Profile Settings - MindNest">
+  <title>Profile - MindNest</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body role="document" class="min-h-screen bg-gray-50">
+  <header role="banner" class="bg-white shadow-sm">
+    <nav role="navigation" aria-label="Main navigation" class="container mx-auto px-4 py-4">
+      <div class="flex items-center justify-between">
+        <a href="dashboard.html" class="flex items-center space-x-2">
+          <span class="text-2xl">🧠</span>
+          <span class="text-xl font-bold text-purple-600">MindNest</span>
+        </a>
+        <nav class="flex items-center space-x-4">
+          <a href="dashboard.html" class="text-gray-600 hover:text-purple-600">Dashboard</a>
+        </nav>
+      </div>
+    </nav>
+  </header>
+
+  <main role="main" class="container mx-auto px-4 py-8">
+    <h1 class="page-title">Profile Settings</h1>
+    
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <section aria-labelledby="profile-info" class="card lg:col-span-2">
+        <h2 id="profile-info" class="section-title">Profile Information</h2>
+        <form id="profile-form" class="space-y-4">
+          <div>
+            <label for="firstName" class="block text-sm font-medium mb-1">First Name</label>
+            <input type="text" id="firstName" class="input-field" placeholder="Enter your first name">
+          </div>
+          <div>
+            <label for="lastName" class="block text-sm font-medium mb-1">Last Name</label>
+            <input type="text" id="lastName" class="input-field" placeholder="Enter your last name">
+          </div>
+          <div class="flex gap-3">
+            <button type="submit" class="btn-primary">💾 Save Profile</button>
+            <button type="button" class="btn-secondary" onclick="document.getElementById('profile-form').reset()">↺ Reset</button>
+          </div>
+        </form>
+      </section>
+      
+      <section aria-labelledby="account-info" class="card">
+        <h2 id="account-info" class="section-title">Account Information</h2>
+        <div id="account-info" class="space-y-4">
+          <div class="text-center py-4">
+            <div class="loading-spinner mx-auto"></div>
+            <p class="text-sm text-gray-500 mt-2">Loading...</p>
+          </div>
+        </div>
+      </section>
+      
+      <section aria-labelledby="preferences" class="card lg:col-span-2">
+        <h2 id="preferences" class="section-title">Preferences</h2>
+        <form id="preferences-form" class="space-y-4">
+          <div>
+            <label for="theme" class="block text-sm font-medium mb-1">Theme</label>
+            <select id="theme" class="input-field">
+              <option value="light">Light</option>
+              <option value="dark">Dark</option>
+            </select>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <label class="flex items-center space-x-2 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+              <input type="checkbox" id="highContrast" class="rounded">
+              <span class="text-sm">High Contrast Mode</span>
+            </label>
+            <label class="flex items-center space-x-2 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+              <input type="checkbox" id="textToSpeech" class="rounded">
+              <span class="text-sm">Text-to-Speech</span>
+            </label>
+            <label class="flex items-center space-x-2 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+              <input type="checkbox" id="notifications" class="rounded" checked>
+              <span class="text-sm">Enable Notifications</span>
+            </label>
+          </div>
+          <button type="submit" class="btn-primary">💾 Save Preferences</button>
+        </form>
+      </section>
+    </div>
+
+    <!-- Data Export Section -->
+    <section aria-labelledby="data-export" class="mt-8">
+      <div id="export-container"></div>
+    </section>
+  </main>
+
+  <script type="module" src="js/profile.js"></script>
+  <script type="module" src="js/data-export.js"></script>
+  <script type="module" src="js/accessibility.js"></script>
+  <script type="module" src="js/crisis-support.js"></script>
+  <script type="module" src="js/quick-mood.js"></script>
+</body>
+</html>
+
