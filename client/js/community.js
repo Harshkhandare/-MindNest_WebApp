@@ -154,7 +154,7 @@ window.addPostToFeed = function(post) {
   const currentUser = getCurrentUser();
   const postId = post.id || post._id;
   const isLiked = post.isLiked || false;
-  const isOwner = post.userId === currentUser.id;
+  const isOwner = currentUser && post.userId === currentUser.id;
   
   const postCard = createPostCard(post, isLiked, isOwner);
   container.insertAdjacentHTML('afterbegin', postCard);

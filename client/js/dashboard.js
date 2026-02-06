@@ -15,8 +15,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   
   // Set user name
   const userNameElement = document.getElementById('user-name');
-  if (userNameElement && user) {
-    userNameElement.textContent = user.firstName || user.username || 'User';
+  if (userNameElement) {
+    userNameElement.textContent = (user && (user.firstName || user.username)) || 'User';
   }
   
   // Set time of day

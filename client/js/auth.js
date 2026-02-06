@@ -62,7 +62,7 @@ export const handleLogin = async (formData, submitButton) => {
     setCurrentUser(data.user);
     
     // Personalized welcome message
-    const userName = data.user.firstName || data.user.username || 'there';
+    const userName = (data.user && (data.user.firstName || data.user.username)) || 'there';
     const timeOfDay = new Date().getHours() < 12 ? 'morning' : 
                       new Date().getHours() < 17 ? 'afternoon' : 'evening';
     showToast(`Good ${timeOfDay}, ${userName}! Welcome back. 🌟`, 'success');
