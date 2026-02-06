@@ -1,4 +1,4 @@
-import { API_BASE_URL, TOKEN_KEY, USER_KEY } from './config.js';
+import { API_BASE_URL, TOKEN_KEY, USER_KEY, DEMO_MODE } from './config.js';
 
 // Token management - Hybrid approach: HttpOnly cookie + localStorage for Socket.IO
 export const getAuthToken = () => {
