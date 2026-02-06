@@ -25,7 +25,7 @@ export const handleSignup = async (formData, submitButton) => {
     setCurrentUser(data.user);
     
     // Show success message with user name
-    const userName = data.user.firstName || data.user.username || 'there';
+    const userName = (data.user && (data.user.firstName || data.user.username)) || 'there';
     showToast(`Welcome to MindNest, ${userName}! 🎉`, 'success');
     
     // Initialize Socket.IO
